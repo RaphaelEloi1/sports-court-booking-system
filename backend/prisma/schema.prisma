@@ -7,10 +7,37 @@ datasource db {
 }
 
 model Jogador {
-  id           Int      @id @default(autoincrement())
+  id           Int       @id @default(autoincrement())
   nome         String
-  email        String   @unique
+  email        String    @unique
   telefone     String
+  criadoEm     DateTime  @default(now())
+  atualizadoEm DateTime  @updatedAt
+  reservas     Reserva[]
+}
+
+model Quadra {
+  id           Int       @id @default(autoincrement())
+  nome         String
+  modalidade   String
+  localizacao  String
+  criadoEm     DateTime  @default(now())
+  atualizadoEm DateTime  @updatedAt
+  reservas     Reserva[]
+}
+
+model Reserva {
+  id           Int      @id @default(autoincrement())
+  jogadorId    Int
+  quadraId     Int
+  inicio       DateTime
+  fim          DateTime
   criadoEm     DateTime @default(now())
   atualizadoEm DateTime @updatedAt
+
+  jogador Jogador @relation(fields: [jogadorId], references: [id], onDelete: Restrict)
+  quadra  Quadra  @relation(fields: [quadraId], references: [id], onDelete: Restrict)
+
+  @@index([jogadorId])
+  @@index([quadraId, inicio, fim])
 }
