@@ -31,6 +31,7 @@ app.get("/teste-banco", async (request, response) => {
       mensagem: "Conexão realizada com sucesso",
       jogadores,
     });
+
   } catch (error) {
     console.error(error);
 

@@ -51,7 +51,27 @@ async function criarReserva(request, response) {
 
 }
 
+async function listarReservas(request, response) {
+    try {
+
+        const reservas = await prisma.reserva.findMany({
+            include: {
+                jogador: true,
+                quadra: true
+            }
+        });
+
+        return response.status(200).json(reservas);
+
+    } catch (error) {
+        console.error(error);
+        return response.status(500).json({
+            mensagem: "Erro ao listar reservas.",
+        });
+    }
+}
 
 module.exports = {
     criarReserva,
+    listarReservas
 };
