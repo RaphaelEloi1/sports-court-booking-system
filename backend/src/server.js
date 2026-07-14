@@ -3,6 +3,7 @@ const cors = require("cors");
 require("dotenv").config();
 
 const jogadorRoutes = require("./routes/jogadorRoutes");
+const reservaRoutes = require("./routes/reservaRoutes");
 const prisma = require("./database");
 
 
@@ -11,6 +12,8 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 app.use("/jogadores", jogadorRoutes);
+app.use("/reservas", reservaRoutes);
+
 
 app.get("/", (request, response) => {
   return response.json({
