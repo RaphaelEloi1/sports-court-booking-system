@@ -133,9 +133,38 @@ async function atualizarReserva(request, response) {
     }
 }
 
+async function deletarReserva(request, response) {
+    try {
+        const id = parseInt(request.params.id);
+
+        if (isNaN(id)) {
+            return response.status(400).json({ mensagem: "ID inválido." });
+        }
+
+        const reserva = await prisma.reserva.findUnique({ where: { id: id } });
+
+        if (!reserva) {
+            return response.status(404).json({ mensagem: "Reserva não encontrada." });
+        }
+
+        await prisma.reserva.delete({
+            where: { id: id }
+        });
+
+        return response.status(200).json({ mensagem: "Reserva cancelada com sucesso." });
+
+    } catch (error) {
+        console.error(error);
+        return response.status(500).json({
+            mensagem: "Erro ao deletar reserva.",
+        });
+    }
+}
+
 
 module.exports = {
     criarReserva,
     listarReservas,
     atualizarReserva,
+    deletarReserva,
 };
