@@ -5,6 +5,6 @@ const router = express.Router();
 
 router.post("/", reservaController.criarReserva);
 router.get("/", reservaController.listarReservas);
-
+router.put("/:id", reservaController.atualizarReserva);
 
 module.exports = router;

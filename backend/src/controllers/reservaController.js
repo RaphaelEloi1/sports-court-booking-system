@@ -70,8 +70,72 @@ async function listarReservas(request, response) {
         });
     }
 }
+async function atualizarReserva(request, response) {
+    try {
+        const id = parseInt(request.params.id);
+        const { jogadorId, quadraId, data, inicio, fim } = request.body;
+
+
+        if (isNaN(id)) {
+            return response.status(400).json({ mensagem: "ID inválido." });
+        }
+
+
+        const reservaExistente = await prisma.reserva.findUnique({ where: { id: id } });
+        if (!reservaExistente) {
+            return response.status(404).json({ mensagem: "Reserva não encontrada." });
+        }
+
+        const dataHoraInicio = new Date(`${data}T${inicio}:00`);
+        const dataHoraFim = new Date(`${data}T${fim}:00`);
+
+
+        if (dataHoraFim <= dataHoraInicio) {
+            return response.status(400).json({
+                mensagem: "O horário de fim deve ser depois do horário de início."
+            });
+        }
+
+
+        const conflitoReserva = await prisma.reserva.findFirst({
+            where: {
+                id: { not: id },
+                quadraId: quadraId,
+                inicio: { lt: dataHoraFim },
+                fim: { gt: dataHoraInicio }
+            }
+        });
+
+        if (conflitoReserva) {
+            return response.status(409).json({
+                mensagem: "Esta quadra já está reservada para este horário."
+            });
+        }
+
+
+        const reservaAtualizada = await prisma.reserva.update({
+            where: { id: id },
+            data: {
+                jogadorId: jogadorId,
+                quadraId: quadraId,
+                inicio: dataHoraInicio,
+                fim: dataHoraFim
+            }
+        });
+
+        return response.status(200).json(reservaAtualizada);
+
+    } catch (error) {
+        console.error(error);
+        return response.status(500).json({
+            mensagem: "Erro ao atualizar reserva.",
+        });
+    }
+}
+
 
 module.exports = {
     criarReserva,
-    listarReservas
+    listarReservas,
+    atualizarReserva,
 };
