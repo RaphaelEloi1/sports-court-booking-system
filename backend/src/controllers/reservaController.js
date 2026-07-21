@@ -53,8 +53,36 @@ async function criarReserva(request, response) {
 
 async function listarReservas(request, response) {
     try {
+        const { quadraId, data, modalidade } = request.query;
+
+        let filtro = {};
+
+        if (quadraId) {
+            filtro.quadraId = parseInt(quadraId);
+        }
+
+        if (data) {
+            const inicioDoDia = new Date(`${data}T00:00:00`);
+            const fimDoDia = new Date(`${data}T23:59:59`);
+
+            filtro.inicio = {
+                gte: inicioDoDia,
+                lte: fimDoDia
+            };
+        }
+
+        if (modalidade) {
+            filtro.quadra = {
+                modalidade: {
+                    equals: modalidade,
+                    mode: 'insensitive'
+                }
+            };
+        }
+
 
         const reservas = await prisma.reserva.findMany({
+            where: filtro,
             include: {
                 jogador: true,
                 quadra: true
@@ -70,6 +98,7 @@ async function listarReservas(request, response) {
         });
     }
 }
+
 async function atualizarReserva(request, response) {
     try {
         const id = parseInt(request.params.id);
