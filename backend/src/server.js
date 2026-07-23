@@ -4,8 +4,8 @@ require("dotenv").config();
 
 const jogadorRoutes = require("./routes/jogadorRoutes");
 const reservaRoutes = require("./routes/reservaRoutes");
+const quadraRoutes = require("./routes/quadraRoutes");
 const prisma = require("./database");
-
 
 const app = express();
 
@@ -13,7 +13,7 @@ app.use(cors());
 app.use(express.json());
 app.use("/jogadores", jogadorRoutes);
 app.use("/reservas", reservaRoutes);
-
+app.use("/quadras", quadraRoutes);
 
 app.get("/", (request, response) => {
   return response.json({
@@ -31,7 +31,6 @@ app.get("/teste-banco", async (request, response) => {
       mensagem: "Conexão realizada com sucesso",
       jogadores,
     });
-
   } catch (error) {
     console.error(error);
 
